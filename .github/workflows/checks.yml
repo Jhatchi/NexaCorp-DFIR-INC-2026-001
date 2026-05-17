@@ -1,0 +1,30 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  markdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install markdownlint-cli
+        run: npm install -g markdownlint-cli
+      - name: Lint markdown files
+        run: markdownlint '**/*.md' --ignore node_modules --disable MD013 MD033 MD041 MD024
+
+  suricata-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Suricata
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y suricata
+      - name: Validate rules with suricata -T
+        run: |
+          sudo suricata -T -S detection/lab.rules -l /tmp/suri-check 2>&1 || \
+            { echo "Rule validation failed"; sudo cat /tmp/suri-check/suricata.log 2>/dev/null; exit 1; }

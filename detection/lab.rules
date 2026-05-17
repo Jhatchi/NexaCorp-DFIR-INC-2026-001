@@ -1,0 +1,274 @@
+#
+# INC-2026-001 - NexaCorp Engagement
+# Suricata Detection Rules - Phase 2 (FINAL v4)
+#
+# Analyst:    Johan-Emmanuel Hatchi (blue11)
+# Created:    2026-05-11
+# File:       /etc/suricata/rules/learner/lab.rules
+# Target:     vsftpd 2.3.4 backdoor exploitation chain + Caldera C2
+#
+# SID range:  9000001 - 9000099 (analyst-local, no conflict with vendor SIDs)
+#
+# Version history:
+#   v1: initial draft with $EXTERNAL_NET/$HOME_NET variables (HTTP parser)
+#   v2: added flow:to_server,not_established to rule 9000003 (fix SC_WARN)
+#   v3: replaced $EXTERNAL_NET/$HOME_NET with 'any' (lab uses all-RFC1918
+#       subnets, so HOME_NET matches both attacker AND target → rules never
+#       matched). Lab-specific fix; production deploy must re-introduce
+#       proper net variables narrowly scoped to the protected segment.
+#   v4: rewrote Caldera rules (9000004, 9000005) from `alert http ...` to
+#       `alert tcp ...` with raw content matches because Suricata HTTP parser
+#       is port-bound (HTTP_PORTS = 80 by default) and Caldera C2 is on 8888.
+#       Removed flow:established from Caldera rules because Suricata's flow
+#       state machine doesn't always settle during PCAP replay.
+#   v5: post-review patch (2026-05-15):
+#       - R6 (sid 9000006): widened scope from phpmyadmin-only to
+#         admin|login|phpmyadmin via pcre (rev:1 -> rev:2). The v4 rule
+#         msg claimed "admin/phpmyadmin path enumeration" but only matched
+#         phpmyadmin, missing /admin and /login probes observed in I6.
+#       - R6 tradeoff comment: clarified that the rule is intentionally
+#         port-bound to 80 (the v4 comment incorrectly claimed port-agnostic).
+#       - Finding ID references in comments: F-002 -> I2, F-008 -> I6
+#         (alignment with the final report numbering).
+#       - Replaced em-dashes in msg fields with regular hyphens for
+#         consistency with fast.log output and the report.
+#
+# After editing this file:
+#   sudo kill -USR2 $(pgrep -f suricata)
+#   sleep 5
+#   sudo truncate -s 0 /var/log/suricata/fast.log
+#   sudo tcpreplay --intf1=ens19 --topspeed /tmp/attack_mtu.pcap
+#   sleep 5
+#   sudo grep -oE '\[1:[0-9]+:' /var/log/suricata/fast.log | sort | uniq -c
+#
+# =============================================================================
+# RULE 1 - vsftpd 2.3.4 backdoor trigger (CVE-2011-2523)
+# =============================================================================
+# Goal: detect the unique exploit signature - a USER command argument ending
+# with ":)" (smiley). This is the *only* condition that triggers the backdoor.
+#
+# Why this works:
+#   - The FTP protocol carries "USER <name>\r\n" in cleartext.
+#   - vsftpd 2.3.4 backdoor activates ONLY if the username ends with ":)".
+#   - No legitimate FTP client uses ":)" in a username - extremely low FP risk.
+#
+# Why each keyword:
+#   - alert tcp any any -> any 21
+#     → port-21-bound match, any source / any destination (lab uses RFC1918
+#       on both sides; production must scope this to the FTP server's IP).
+#   - flow:to_server,established
+#     → match only client-to-server packets in an established TCP session
+#       (eliminates handshake packets from inspection).
+#   - content:"USER "; depth:5
+#     → match the literal FTP USER command at offset 0 in payload. depth:5
+#       restricts the search window to the first 5 bytes for efficiency.
+#   - pcre:"/^USER\s+\S*:\)\r?\n/i"
+#     → strict regex: "USER " followed by any non-whitespace ending with ":)".
+#       The \r?\n captures the line terminator. Case-insensitive.
+#
+alert tcp any any -> any 21 ( \
+    msg:"INC-2026-001 - vsftpd 2.3.4 backdoor trigger (CVE-2011-2523) - USER ending with smiley"; \
+    flow:to_server,established; \
+    content:"USER "; depth:5; \
+    pcre:"/^USER\s+\S*:\)\r?\n/i"; \
+    reference:cve,2011-2523; \
+    reference:url,scarybeastsecurity.blogspot.com/2011/07/alert-vsftpd-download-backdoored.html; \
+    classtype:attempted-admin; \
+    metadata:author Johan-Emmanuel Hatchi, mitre_attack T1190; \
+    sid:9000001; rev:1;)
+
+
+# =============================================================================
+# RULE 2 - vsftpd 2.3.4 vulnerable banner (CVE-2011-2523)
+# =============================================================================
+# Goal: detect that a host advertises vsftpd 2.3.4 in its FTP banner. This is
+# a "vulnerability exposure" signal, not an exploitation signal - useful for
+# inventory & hardening triage.
+#
+# Why this works:
+#   - vsftpd emits "220 (vsFTPd 2.3.4)\r\n" as its first server banner.
+#   - Any host on the monitored network emitting this banner is running the
+#     backdoored build (or a forensic copy of it).
+#
+# Why each keyword:
+#   - alert tcp any 21 -> any any
+#     → server-to-client traffic from FTP server.
+#   - flow:from_server,established
+#     → only server replies in established sessions.
+#   - content:"220 (vsFTPd 2.3.4)"; depth:30
+#     → match the banner string in the first 30 bytes of payload.
+#
+alert tcp any 21 -> any any ( \
+    msg:"INC-2026-001 - vsftpd 2.3.4 vulnerable banner advertised (CVE-2011-2523)"; \
+    flow:from_server,established; \
+    content:"220 (vsFTPd 2.3.4)"; depth:30; \
+    reference:cve,2011-2523; \
+    classtype:misc-attack; \
+    metadata:author Johan-Emmanuel Hatchi, mitre_attack T1190; \
+    sid:9000002; rev:1;)
+
+
+# =============================================================================
+# RULE 3 - Inbound connection to backdoor port 6200
+# =============================================================================
+# Goal: alert on any incoming TCP connection establishment on port 6200,
+# which is the hardcoded port the vsftpd 2.3.4 backdoor opens.
+#
+# Why this works:
+#   - Port 6200 is not a standard service port (IANA: unassigned).
+#   - Any inbound connection to 6200 on a host that doesn't legitimately
+#     run a service on 6200 is highly suspect.
+#
+# Caveat:
+#   - If NexaCorp uses 6200 for any legitimate internal service, this rule
+#     would FP. To verify with client (recommendation in client report).
+#
+# Why each keyword:
+#   - alert tcp any any -> any 6200
+#     → target on port 6200.
+#   - flags:S,12
+#     → SYN flag set, no ACK - i.e., connection initiation attempt.
+#       Mask "12" includes CWR/ECE for ECN, ignores PSH/URG/FIN/RST.
+#   - flow:to_server,not_established
+#     → fixes SC_WARN_POOR_RULE warning; explicit direction for SYN-only.
+#   - threshold:type limit,track by_src,count 1,seconds 60
+#     → throttle to 1 alert per source IP per minute. Avoid log flood if
+#       attacker port-scans 6200 repeatedly.
+#
+alert tcp any any -> any 6200 ( \
+    msg:"INC-2026-001 - Inbound connection to suspicious port 6200 (vsftpd 2.3.4 backdoor bind shell)"; \
+    flags:S,12; \
+    flow:to_server,not_established; \
+    threshold:type limit, track by_src, count 1, seconds 60; \
+    reference:cve,2011-2523; \
+    classtype:trojan-activity; \
+    metadata:author Johan-Emmanuel Hatchi, mitre_attack T1059.004; \
+    sid:9000003; rev:1;)
+
+
+# =============================================================================
+# RULE 4 - MITRE Caldera Sandcat agent beacon (TCP content match)
+# =============================================================================
+# Goal: detect Sandcat agent beacons. Originally written using the http
+# parser (http.method, http.uri, http.user_agent), but Suricata's HTTP
+# parser is bound to HTTP_PORTS (default: 80) and Caldera C2 typically
+# uses port 8888. Rewritten in TCP+content mode to match the raw HTTP
+# wire bytes regardless of port.
+#
+# Why this works:
+#   - Caldera Sandcat agent emits a fixed HTTP wire format:
+#       POST /beacon HTTP/1.1\r\n
+#       User-Agent: Go-http-client/1.1\r\n
+#   - Both substrings appear in the same TCP packet (small POST request).
+#   - "Go-http-client/1.1" is the default Go HTTP client UA - coupled with
+#     "POST /beacon" the false-positive rate is negligible.
+#
+# Why each keyword:
+#   - alert tcp any any -> any any  → port-agnostic, matches any TCP flow.
+#   - content:"POST /beacon"        → exact byte match for the request line.
+#   - content:"Go-http-client/1.1"  → UA match. distance:0 ensures it appears
+#                                     after the POST line in the same payload.
+#
+alert tcp any any -> any any ( \
+    msg:"INC-2026-001 - MITRE Caldera Sandcat agent beacon detected (POST /beacon + Go-http-client UA)"; \
+    content:"POST /beacon"; \
+    content:"Go-http-client/1.1"; distance:0; \
+    threshold:type limit, track by_src, count 1, seconds 60; \
+    reference:url,caldera.mitre.org; \
+    classtype:trojan-activity; \
+    metadata:author Johan-Emmanuel Hatchi, mitre_attack T1071.001, mitre_attack T1102; \
+    sid:9000004; rev:3;)
+
+
+# =============================================================================
+# RULE 5 - Caldera C2 server response (TCP content match)
+# =============================================================================
+# Goal: complement rule 4 - detect the C2 server's own fingerprint. Like
+# rule 4, rewritten in TCP+content mode for port-agnostic operation.
+#
+# Why this works:
+#   - Caldera C2 server (aiohttp) emits a fixed Server header:
+#       Server: Python/3.10 aiohttp/3.13.4
+#   - This byte sequence in a TCP server-to-client packet is distinctive.
+#   - Throttled to 1 alert per source IP per 5 minutes to avoid log flood
+#     on persistent C2 sessions (Caldera beacons every 30-60s).
+#
+alert tcp any any -> any any ( \
+    msg:"INC-2026-001 - Caldera C2 server response detected (Python aiohttp Server header)"; \
+    content:"Server: Python/3.10 aiohttp"; \
+    threshold:type limit, track by_src, count 1, seconds 300; \
+    reference:url,caldera.mitre.org; \
+    classtype:trojan-activity; \
+    metadata:author Johan-Emmanuel Hatchi, mitre_attack T1071.001; \
+    sid:9000005; rev:3;)
+
+
+# =============================================================================
+# RULE 6 - (BONUS) HTTP admin-path enumeration
+# =============================================================================
+# Goal: detect the recon pattern observed in I6 - same source requests
+# multiple "admin-like" paths in a short window from automated tooling UAs.
+#
+# Why this works:
+#   - The PCAP shows the attacker GETs /admin, /login, /phpmyadmin from
+#     curl/7.81.0 and Wget/1.21.2.
+#   - The combination of admin-like paths AND CLI HTTP user agents is the
+#     fingerprint of automated reconnaissance tools (dirb, gobuster, ffuf,
+#     custom scripts).
+#
+# Tradeoff:
+#   - This rule is intentionally port-bound to 80 (HTTP traffic is overwhelmingly
+#     on this port for legitimate use). A port-agnostic variant would need to
+#     detect HTTP wire format on non-standard ports and increase FP risk.
+#   - Two separate rules would be cleaner (one per UA), but combined keeps
+#     the ruleset compact for the report.
+#
+alert tcp any any -> any 80 ( \
+    msg:"INC-2026-001 - HTTP admin path enumeration (admin/login/phpmyadmin) from automated tool"; \
+    content:"GET /"; depth:5; \
+    pcre:"/GET \/(admin|login|phpmyadmin)/i"; \
+    pcre:"/User-Agent:\s+(curl|Wget)/i"; \
+    threshold:type limit, track by_src, count 3, seconds 300; \
+    classtype:web-application-attack; \
+    metadata:author Johan-Emmanuel Hatchi, mitre_attack T1595.002, mitre_attack T1592.002; \
+    sid:9000006; rev:2;)
+
+
+# =============================================================================
+# RULE 7 - FTP USER enumeration (low-and-slow brute force pattern)
+# =============================================================================
+# Goal: detect the I2 pattern - a single source IP performing 5+ FTP
+# USER attempts within a 30-minute window. This catches the slow-paced
+# enumeration that Wazuh's built-in rule 11452 (12 in 60s) misses.
+#
+# Why this works:
+#   - I2 showed the attacker tried 12 distinct USER values over ~2h40
+#     visible in the PCAP, with cadence 20-90 min between attempts.
+#   - The PCAP-visible 12 events lay below Wazuh's threshold but well
+#     above this 5-in-30min slow-burn rule.
+#
+# Why each keyword:
+#   - alert tcp any any -> any 21
+#     → outbound USER commands.
+#   - flow:to_server,established
+#     → only client-side FTP traffic in an established session.
+#   - content:"USER "; depth:5
+#     → match the literal FTP USER command at start of payload.
+#   - threshold:type threshold,track by_src,count 5,seconds 1800
+#     → fire alert when same source IP sends 5+ USER commands in 30min.
+#       Compatible with low-and-slow attacker cadence (no need for rapid
+#       brute-force fingerprint).
+#
+alert tcp any any -> any 21 ( \
+    msg:"INC-2026-001 - Possible FTP username enumeration (5+ USER commands in 30min from single src)"; \
+    flow:to_server,established; \
+    content:"USER "; depth:5; \
+    threshold:type threshold, track by_src, count 5, seconds 1800; \
+    classtype:attempted-recon; \
+    metadata:author Johan-Emmanuel Hatchi, mitre_attack T1589, mitre_attack T1078.003; \
+    sid:9000007; rev:1;)
+
+
+#
+# End of INC-2026-001 detection ruleset.
+#

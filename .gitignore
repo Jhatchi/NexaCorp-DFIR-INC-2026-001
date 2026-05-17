@@ -1,0 +1,27 @@
+# macOS / editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Backups and ephemeral
+*.bak
+*.orig
+*.tmp
+
+# Local archives (kept outside the repo)
+*_archives/
+*_notes_local/
+
+# Python (for any local tooling outside the repo)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Suricata local runtime
+eve.json
+fast.log
+suricata.log
+unified2*
