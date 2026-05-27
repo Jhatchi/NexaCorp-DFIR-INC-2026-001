@@ -84,7 +84,7 @@ NexaCorp's IT team observed **unexpected outbound connections from one of their 
 1. **PCAP starts mid-incident** - Sandcat C2 beacon already active at frame 1
 2. **Host logs ~7h post-incident** - first entry is `syslogd restart` (likely VM reboot)
 3. **`wazuh-alerts.json` is invalid** (HTTP 404 stored as JSON)
-4. **Wazuh log ingestion was temporarily unavailable** until 2026-05-11 11:39 UTC (confirmed by coach Thomas B. (BeCode lab coach)) - once restored, 397 events were retrievable via the dashboard
+4. **Wazuh log ingestion was temporarily unavailable** until 2026-05-11 11:39 UTC (confirmed by coach Thomas Bataboudila (BeCode lab coach)) - once restored, 397 events were retrievable via the dashboard
 
 ---
 
