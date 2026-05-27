@@ -84,7 +84,7 @@ NexaCorp's IT team observed **unexpected outbound connections from one of their 
 1. **PCAP starts mid-incident** - Sandcat C2 beacon already active at frame 1
 2. **Host logs ~7h post-incident** - first entry is `syslogd restart` (likely VM reboot)
 3. **`wazuh-alerts.json` is invalid** (HTTP 404 stored as JSON)
-4. **Wazuh log ingestion was temporarily unavailable** until 2026-05-11 11:39 UTC (confirmed by coach Thomas Bataboudila (BeCode lab coach)) - once restored, 397 events were retrievable via the dashboard
+4. **Wazuh log ingestion was temporarily unavailable** until 2026-05-11 11:39 UTC (confirmed by Thomas B., BeCode lab coach) - once restored, 397 events were retrievable via the dashboard
 
 ---
 
@@ -372,7 +372,7 @@ Test workflow in `workflow.md`.
 
 ## 12. Operational Notes (BeCode internal)
 
-- Coach the lab coach confirmed (2026-05-11 12:50) Wazuh log ingestion pipeline issue; restored at 11:39 UTC.
+- Thomas B. confirmed (2026-05-11 12:50) Wazuh log ingestion pipeline issue; restored at 11:39 UTC.
 - SOC workstation `blue11` password changed from default at session start.
 - Suricata gotcha: `comm` shows `Suricata-Main` (capital S), `pkill suricata` (lowercase) fails silently. Use `pkill -9 -f suricata` or `kill -9 <PID>`.
 
@@ -381,7 +381,7 @@ Test workflow in `workflow.md`.
 ## 13. References
 
 - Briefings 1-3 (BeCode lab)
-- Sarah Chen briefing - Coach 2026-05-10 20:33
+- Sarah Chen briefing, 2026-05-10 20:33
 - CVE-2011-2523: https://nvd.nist.gov/vuln/detail/CVE-2011-2523
 - vsftpd 2.3.4 backdoor postmortem: https://scarybeastsecurity.blogspot.com/2011/07/alert-vsftpd-download-backdoored.html
 - Metasploitable 2: https://docs.rapid7.com/metasploit/metasploitable-2/

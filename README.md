@@ -15,7 +15,7 @@ DFIR investigation and detection engineering on a simulated intrusion against Ne
 
 All IP addresses, hostnames, and indicators of compromise published in this report (`172.16.50.10`, `192.168.10.10`, `10.40.0.200`, `blue11`, `mesdec`, etc.) are **lab-local artifacts**, not real-world threat intelligence. Do not feed them to a SIEM as IOCs.
 
-**Publication authorized** by BeCode lab coach (Thomas Bataboudila) on 2026-05-17. The full Confidentiality Statement appears in the findings report (section "Distribution and Classification").
+**Publication authorized** by BeCode lab coach (Thomas B.) on 2026-05-17. The full Confidentiality Statement appears in the findings report (section "Distribution and Classification").
 
 ## At a glance
 
@@ -338,7 +338,7 @@ The Suricata rules in `detection/lab.rules` and the report text are both release
 
 ## Acknowledgments
 
-- **Thomas Bataboudila** (BeCode lab coach): scenario design, mid-investigation Wazuh ingestion fix, publication authorization for portfolio use.
+- **Thomas B.** (BeCode lab coach): scenario design, mid-investigation Wazuh ingestion fix, publication authorization for portfolio use.
 - **MITRE** for the Caldera framework that powered the simulated C2 implant, and for the ATT&CK knowledge base used to map every finding.
 - **Suricata project** for the engine that made the 7 rules deployable in under 30 minutes.
 
