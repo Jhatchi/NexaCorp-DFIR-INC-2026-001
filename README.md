@@ -26,6 +26,8 @@ All IP addresses, hostnames, and indicators of compromise published in this repo
 | Phases | DFIR (forensic) + detection engineering |
 | Delivered | 2026-05-15 |
 | Status | Complete (Phase 1 + Phase 2) |
+| Continuation | [`INC-2026-002`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-002) (Brussels app server pivot, Wazuh detection engineering) |
+| Final assessment | [`INC-2026-003`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-003) (Month 1 Assessment, three-incident kill chain) |
 
 | Investigation output | Value |
 |---|---|
