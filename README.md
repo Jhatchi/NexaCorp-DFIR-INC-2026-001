@@ -2,7 +2,7 @@
 
 DFIR investigation and detection engineering on a simulated intrusion against NexaCorp infrastructure. Conducted as a 4-day solo engagement (BeCode Brussels Blue & Red Team bootcamp, Mission 01). The deliverable is a 54-page findings report (PDF) plus 7 validated Suricata rules that catch the captured incident in PCAP replay.
 
-[![checks](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001/actions/workflows/checks.yml/badge.svg)](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001/actions/workflows/checks.yml)
+[![ci](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001/actions/workflows/ci.yml/badge.svg)](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001/actions/workflows/ci.yml)
 [![Methodology](https://img.shields.io/badge/methodology-NIST%20SP%20800--61r2-blue.svg)](#methodology)
 [![Framework](https://img.shields.io/badge/framework-MITRE%20ATT%26CK-red.svg)](https://attack.mitre.org/)
 [![Detection](https://img.shields.io/badge/Suricata-7%20rules%20validated-green.svg)](detection/lab.rules)
@@ -28,6 +28,7 @@ All IP addresses, hostnames, and indicators of compromise published in this repo
 | Status | Complete (Phase 1 + Phase 2) |
 | Continuation | [`INC-2026-002`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-002) (Brussels app server pivot, Wazuh detection engineering) |
 | Final assessment | [`INC-2026-003`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-003) (Month 1 Assessment, three-incident kill chain) |
+| Later missions | [`INC-2026-004`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-004) (SQL injection on bru-web-01) and [`INC-2026-005`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-005) (OS command injection and web shell) |
 
 | Investigation output | Value |
 |---|---|
