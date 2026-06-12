@@ -1,27 +1,56 @@
-# macOS / editor / OS
-.DS_Store
-.idea/
-.vscode/
-*.swp
-*~
+# Evidence bundle is BeCode lab property, never committed
+*.pcap
+*.tar.gz
+evidence/
+evidence_fixed/
+nexacorp-INC2026004-evidence/
+logs/
+wazuh-alerts.json
 
-# Backups and ephemeral
-*.bak
-*.orig
-*.tmp
-
-# Local archives (kept outside the repo)
-*_archives/
-*_notes_local/
-
-# Python (for any local tooling outside the repo)
-__pycache__/
-*.py[cod]
-.venv/
-venv/
-
-# Suricata local runtime
+# IDS/Suricata runtime outputs (regenerated locally from the capture)
 eve.json
 fast.log
 suricata.log
 unified2*
+
+# Cracking artifacts (contain recovered secrets, keep local)
+*.hash
+*.pot
+.john/
+
+# Python (report generator runs locally, not committed here)
+__pycache__/
+*.py[cod]
+*.pyc
+*.egg-info/
+.venv/
+venv/
+
+# Node (CI tooling)
+node_modules/
+
+# Editors / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Working notes / scratch (kept local, not for publication)
+raw/
+scratch/
+notes/scratch/
+*.draft.md
+*_notes_local/
+*_archives/
+
+# Backups / temp
+*.bak
+*.orig
+*.tmp
