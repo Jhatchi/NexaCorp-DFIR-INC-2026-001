@@ -143,7 +143,7 @@ Every claim in the report is traceable to an artefact in the evidence package, w
 **Network IDS / detection engineering**
 
 - [Suricata 6.0.4](https://suricata.io/) (`afpacket` mode, single-thread, Hyperscan disabled in lab): authored, validated and tuned the 7 rules in this deliverable
-- `suricata -T` (config + rule validation, used in the [`checks.yml`](.github/workflows/checks.yml) CI workflow)
+- `suricata -T`: config and rule validation during deployment and tuning
 - `kill -USR2 $(pgrep suricata)`: live rule reload during iterative tuning
 
 **SIEM and host telemetry**
@@ -209,7 +209,7 @@ Phase 2 of the engagement produced 7 Suricata rules (SID `9000001` to `9000007`)
 | Records in `eve.json` (raw, pre-throttle) | **314** |
 | Suricata version | 6.0.4 (afpacket, single-thread) |
 | Replay command | `tcpreplay --intf1=ens19 --topspeed attack_mtu.pcap` |
-| CI validation | [`suricata -T`](.github/workflows/checks.yml) on every push |
+| CI validation | [`markdownlint` + typography check](.github/workflows/ci.yml) on every push |
 
 The 40-vs-314 spread reflects deliberate throttling on rules 9000003, 9000004, 9000005, 9000006 to give SOC analysts a clean operational view while preserving the raw alert stream in `eve.json` for forensic deep-dives.
 
@@ -235,7 +235,7 @@ NexaCorp-DFIR-INC-2026-001/
 ├── .gitignore
 ├── .github/
 │   └── workflows/
-│       └── checks.yml                          markdownlint + suricata -T validation
+│       └── ci.yml                              markdownlint + typography validation
 ├── reports/
 │   ├── INC-2026-001_Findings_Report.pdf       canonical 54-page deliverable
 │   └── INC-2026-001_Findings_Report.md        same content, Markdown source
@@ -255,7 +255,7 @@ NexaCorp-DFIR-INC-2026-001/
 | `detection/lab.rules` | Production-ready Suricata ruleset | SOC / detection engineer |
 | `detection/workflow.md` | Deployment + replay validation guide | Detection engineer onboarding |
 | `notes/journal.md` | Investigation working notebook | DFIR practitioner studying the method |
-| `.github/workflows/checks.yml` | Automated rule + markdown validation on push | CI |
+| `.github/workflows/ci.yml` | Automated markdownlint + typography validation on push | CI |
 
 ## Reproducibility
 
