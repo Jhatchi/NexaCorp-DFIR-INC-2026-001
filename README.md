@@ -6,6 +6,7 @@ DFIR investigation and detection engineering on a simulated intrusion against Ne
 [![Methodology](https://img.shields.io/badge/methodology-NIST%20SP%20800--61r2-blue.svg)](#methodology)
 [![Framework](https://img.shields.io/badge/framework-MITRE%20ATT%26CK-red.svg)](https://attack.mitre.org/)
 [![Detection](https://img.shields.io/badge/Suricata-7%20rules%20validated-green.svg)](detection/lab.rules)
+[![CVE](https://img.shields.io/badge/CVE--2011--2523-vsftpd%20backdoor-critical.svg)](https://nvd.nist.gov/vuln/detail/CVE-2011-2523)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Johan--Emmanuel%20Hatchi-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/johan-emmanuel-hatchi/)
 
