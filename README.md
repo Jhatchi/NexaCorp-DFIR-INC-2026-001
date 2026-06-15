@@ -28,7 +28,7 @@ All IP addresses, hostnames, and indicators of compromise published in this repo
 | Status | Complete (Phase 1 + Phase 2) |
 | Continuation | [`INC-2026-002`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-002) (Brussels app server pivot, Wazuh detection engineering) |
 | Final assessment | [`INC-2026-003`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-003) (Month 1 Assessment, three-incident kill chain) |
-| Later missions | [`INC-2026-004`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-004) (SQL injection on bru-web-01) and [`INC-2026-005`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-005) (OS command injection and web shell) |
+| Later missions | [`INC-2026-004`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-004) (SQL injection on bru-web-01), [`INC-2026-005`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-005) (OS command injection and web shell), and [`INC-2026-006`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-006) (stored XSS and session hijacking) |
 
 | Investigation output | Value |
 |---|---|
