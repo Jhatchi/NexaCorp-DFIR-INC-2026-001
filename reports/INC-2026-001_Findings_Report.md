@@ -3,7 +3,7 @@
 **Engagement:** NexaCorp DFIR, Linux Infrastructure Compromise (vsftpd backdoor, Caldera C2)
 **Reference:** BCC-2026 / INC-2026-001
 **Target system:** 192.168.10.10 (Metasploitable 2, hostname `metasploitable`), NexaCorp internal server
-**Analyst:** Johan-Emmanuel Hatchi, BeCode Cybersecurity Bootcamp (promotion 2025-2026)
+**Analyst:** Johan-Emmanuel Hatchi, SOC Analyst L1, BeCode Corp
 **Date:** 11 May 2026
 **Classification:** Internal - Not for distribution
 
