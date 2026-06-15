@@ -1,22 +1,10 @@
-# Incident Response Engagement - Findings & Detection Report
+# INC-2026-001 Findings Report: Linux Infrastructure Compromise
 
-**Mission 01 - Network Recon & First Shell**
-
----
-
-**CLIENT**
-**NexaCorp**
-Internal server intrusion investigation following anomalous outbound traffic observed by the NexaCorp IT team. Engagement reference **INC-2026-001**. Forensic analysis (Phase 1) and Suricata detection engineering (Phase 2).
-
----
-
-**Prepared by**
-**Johan-Emmanuel Hatchi**
-BeCode Cybersecurity Bootcamp - Promotion 2025-2026
-linkedin.com/in/johan-emmanuel-hatchi · github.com/Jhatchi
-
+**Engagement:** NexaCorp DFIR, Linux Infrastructure Compromise (vsftpd backdoor, Caldera C2)
+**Reference:** BCC-2026 / INC-2026-001
+**Target system:** 192.168.10.10 (Metasploitable 2, hostname `metasploitable`), NexaCorp internal server
+**Analyst:** Johan-Emmanuel Hatchi, BeCode Cybersecurity Bootcamp (promotion 2025-2026)
 **Date:** 11 May 2026
-**Reference:** BCC-2026 | INC-2026-001
 **Classification:** Internal - Not for distribution
 
 ---
