@@ -27,9 +27,6 @@ All IP addresses, hostnames, and indicators of compromise published in this repo
 | Phases | DFIR (forensic) + detection engineering |
 | Delivered | 2026-05-15 |
 | Status | Complete (Phase 1 + Phase 2) |
-| Continuation | [`INC-2026-002`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-002) (Brussels app server pivot, Wazuh detection engineering) |
-| Final assessment | [`INC-2026-003`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-003) (Month 1 Assessment, three-incident kill chain) |
-| Later missions | [`INC-2026-004`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-004) (SQL injection on bru-web-01), [`INC-2026-005`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-005) (OS command injection and web shell), and [`INC-2026-006`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-006) (stored XSS and session hijacking) |
 
 | Investigation output | Value |
 |---|---|
@@ -77,6 +74,15 @@ The existing **Wazuh SIEM ingested 397 events** from the target host but raised 
 | C2 IP | `10.40.0.200:8888` | Caldera Sandcat command-and-control |
 | Backdoor port | `6200/tcp` | CVE-2011-2523 root bind shell |
 | Exploit payload | FTP `USER` ending with `:)` | Backdoor trigger pattern |
+
+## Kill chain summary
+
+The captured incident has two distinct strands, reconstructed from the PCAP:
+
+1. **Exposed service**: `vsftpd` 2.3.4, a build with a publicly documented backdoor (CVE-2011-2523), was reachable on the internal network (Finding I1).
+2. **Exploit**: a single FTP `USER` request ending with `:)` triggered the backdoor (Finding I3).
+3. **Root bind shell**: an unauthenticated root shell opened on TCP/6200; the attacker ran 8 reconnaissance commands over a 20-second session, then disconnected, with no persistence or exfiltration through this vector (Finding I4).
+4. **Parallel C2 (pre-existing)**: independently, a MITRE Caldera Sandcat implant was already beaconing in cleartext HTTP to `10.40.0.200:8888` throughout the window, evidence of a prior compromise not represented in the evidence bundle (Finding I5).
 
 ## How to read this report
 
@@ -163,7 +169,7 @@ Every claim in the report is traceable to an artefact in the evidence package, w
 - [MITRE ATT&CK](https://attack.mitre.org/): technique attribution
 - [CVE-2011-2523 advisory](https://nvd.nist.gov/vuln/detail/CVE-2011-2523): vsftpd 2.3.4 backdoor reference
 
-## Findings index
+## Findings summary
 
 The 10 findings (`I1` to `I10`) are documented in detail in the [findings report](reports/INC-2026-001_Findings_Report.md). Each entry includes evidence, reproducibility commands, MITRE ATT&CK mapping, and remediation guidance.
 
@@ -334,11 +340,14 @@ Expected output (after one full replay):
 - **`HOME_NET` was set to `any` for the lab.** In a real NexaCorp deployment, `HOME_NET` must be narrowed to the protected segment only (e.g. `192.168.10.0/24`) so that `EXTERNAL_NET = !$HOME_NET` correctly covers the attacker space. The rules as delivered are lab-tuned and need this single config change before production use.
 - **4-day timebox: 2 followups remain.** Pulling `full_log` for all 80 sudo events to identify which user accounts triggered them (and timestamps relative to the FTP exploit), and reviewing the 12 SSH authentication successes to distinguish legitimate admin sessions from attacker-controlled ones. Both are documented in the report's "Open Questions" annex.
 
-## License
+## NexaCorp DFIR series
 
-[MIT](LICENSE), 2026 Johan-Emmanuel Hatchi.
-
-The Suricata rules in `detection/lab.rules` and the report text are both released under the same MIT license: free to copy, adapt, and redeploy with attribution. The PCAP, lab infrastructure, and engagement briefings remain BeCode Brussels property and are not redistributed.
+- **INC-2026-001**: this repository
+- [INC-2026-002](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-002): privilege escalation and persistence (Tor SSH, SUID, backdoor account)
+- [INC-2026-003](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-003): month-1 cross-incident assessment
+- [INC-2026-004](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-004): SQL injection (web portal)
+- [INC-2026-005](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-005): OS command injection and web shell (web portal)
+- [INC-2026-006](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-006): stored XSS and session hijacking (web portal)
 
 ## Acknowledgments
 
@@ -353,3 +362,9 @@ Solo DFIR engagement delivered during the [BeCode Brussels](https://becode.org) 
 Author: **[Johan-Emmanuel Hatchi](https://github.com/Jhatchi)** ([LinkedIn](https://www.linkedin.com/in/johan-emmanuel-hatchi/)).
 
 Open to cybersecurity internship opportunities starting September 2026 in Belgium. Looking for SOC / DFIR / detection engineering roles where this kind of end-to-end investigation work (PCAP forensics, SIEM correlation, IDS rule writing, formal client reporting) is in scope.
+
+## License
+
+[MIT](LICENSE), 2026 Johan-Emmanuel Hatchi.
+
+The Suricata rules in `detection/lab.rules` and the report text are both released under the same MIT license: free to copy, adapt, and redeploy with attribution. The PCAP, lab infrastructure, and engagement briefings remain BeCode Brussels property and are not redistributed.
