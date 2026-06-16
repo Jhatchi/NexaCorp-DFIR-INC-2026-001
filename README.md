@@ -93,14 +93,14 @@ The repository is organized so that you can dive in at the right depth for your 
 | **Recruiter or hiring manager** | This README + skim the [PDF](reports/INC-2026-001_Findings_Report.pdf) executive summary | 5 min |
 | **SOC analyst evaluating fit** | [PDF sections 5 (Detection Gap) and 8 (Detection Engineering)](reports/INC-2026-001_Findings_Report.pdf) + [`detection/lab.rules`](detection/lab.rules) | 20 min |
 | **DFIR practitioner** | Full [PDF](reports/INC-2026-001_Findings_Report.pdf) + [`notes/journal.md`](notes/journal.md) for the investigation trail | 60 min |
-| **Detection engineer** | [`detection/lab.rules`](detection/lab.rules) + [`detection/workflow.md`](detection/workflow.md) for deployment and replay validation | 30 min |
+| **Detection engineer** | [`detection/lab.rules`](detection/lab.rules) + [`detection/README.md`](detection/README.md) for deployment and replay validation | 30 min |
 | **Anyone who wants to grep, cite, or diff** | [Markdown source of the report](reports/INC-2026-001_Findings_Report.md) | as needed |
 
 **Canonical deliverable:** the PDF in `reports/`. The Markdown source is identical content, kept in the repo for searchability and version control.
 
 **Investigation trail:** `notes/journal.md` is the analyst's working notebook (hypotheses tested and refuted, evidence inventory, plan status). It complements the formal report by showing **how** the conclusions were reached, not just the conclusions themselves.
 
-**Detection ruleset:** `detection/lab.rules` contains the 7 Suricata rules with full per-keyword justification in inline comments. `detection/workflow.md` documents the deploy-and-replay validation workflow used to confirm each rule fires on the captured incident.
+**Detection ruleset:** `detection/lab.rules` contains the 7 Suricata rules with full per-keyword justification in inline comments. `detection/README.md` documents the deploy-and-replay validation workflow used to confirm each rule fires on the captured incident.
 
 ## Methodology
 
@@ -222,7 +222,7 @@ The 40-vs-314 spread reflects deliberate throttling on rules 9000003, 9000004, 9
 
 ### Notable design decisions
 
-Four iterative fixes during deployment are documented in [`detection/workflow.md`](detection/workflow.md). Key lessons:
+Four iterative fixes during deployment are documented in [`detection/README.md`](detection/README.md). Key lessons:
 
 1. **Port-agnostic HTTP detection.** Rules 9000004 and 9000005 (Caldera) were initially written with `alert http` and `http.uri` keywords, which only engage Suricata's HTTP parser on port 80. Caldera C2 runs on port 8888, so the parser was bypassed and the rules never fired. Fix: rewrite in TCP+content mode (`alert tcp ... content:"POST /beacon"; content:"Go-http-client/1.1";`) which matches raw HTTP bytes regardless of port.
 2. **`flow:established` unreliable during PCAP replay.** A captured TCP handshake outside the replay window leaves the flow state machine in an indeterminate state. Removing `flow:established` from the Caldera rules makes them match in both live and replay modes.
@@ -248,7 +248,7 @@ NexaCorp-DFIR-INC-2026-001/
 │   └── INC-2026-001_Findings_Report.md        same content, Markdown source
 ├── detection/
 │   ├── lab.rules                               7 Suricata rules (SID 9000001-9000007)
-│   └── workflow.md                             deploy + replay validation workflow
+│   └── README.md                               deploy + replay validation workflow
 └── notes/
     └── journal.md                              analyst investigation journal (hypotheses, plan, IOCs, timeline)
 ```
@@ -260,7 +260,7 @@ NexaCorp-DFIR-INC-2026-001/
 | `reports/*.pdf` | Canonical deliverable, formal report | Client, recruiter, auditor |
 | `reports/*.md` | Same content, grep-friendly source | Anyone citing or diffing |
 | `detection/lab.rules` | Production-ready Suricata ruleset | SOC / detection engineer |
-| `detection/workflow.md` | Deployment + replay validation guide | Detection engineer onboarding |
+| `detection/README.md` | Deployment + replay validation guide | Detection engineer onboarding |
 | `notes/journal.md` | Investigation working notebook | DFIR practitioner studying the method |
 | `.github/workflows/ci.yml` | Automated markdownlint, typography, and Suricata rule validation (`suricata -T`, runs when `detection/*.rules` is present) on push | CI |
 

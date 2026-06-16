@@ -1,5 +1,5 @@
-# INC-2026-001 - NexaCorp Intrusion Investigation
-## Investigation Journal - Phase 1 Complete
+# Investigation Journal: INC-2026-001
+## Phase 1 Complete
 
 ---
 
@@ -357,7 +357,7 @@ Rules to deploy (7 total, see `lab.rules`):
 6. **HTTP admin path enumeration** (SID 9000006) - `/admin`, `/phpmyadmin`, `/login`
 7. **FTP user enumeration** (SID 9000007) - slow brute-force pattern
 
-Test workflow in `workflow.md`.
+Test workflow in `README.md`.
 
 ---
 
