@@ -249,6 +249,11 @@ NexaCorp-DFIR-INC-2026-001/
 ├── detection/
 │   ├── lab.rules                               7 Suricata rules (SID 9000001-9000007)
 │   └── README.md                               deploy + replay validation workflow
+├── evidence-summary/
+│   └── ioc-summary.md                          indicators of compromise (SIEM-ingestible)
+├── methodology/
+│   ├── attack-timeline.md                      incident timeline (UTC)
+│   └── attck-mapping.md                        MITRE ATT&CK mapping table
 └── notes/
     └── journal.md                              analyst investigation journal (hypotheses, plan, IOCs, timeline)
 ```
@@ -261,6 +266,9 @@ NexaCorp-DFIR-INC-2026-001/
 | `reports/*.md` | Same content, grep-friendly source | Anyone citing or diffing |
 | `detection/lab.rules` | Production-ready Suricata ruleset | SOC / detection engineer |
 | `detection/README.md` | Deployment + replay validation guide | Detection engineer onboarding |
+| `evidence-summary/ioc-summary.md` | Indicators of compromise, by category | SOC / threat hunting |
+| `methodology/attack-timeline.md` | Incident timeline (UTC) | DFIR practitioner |
+| `methodology/attck-mapping.md` | MITRE ATT&CK mapping table | DFIR / detection engineer |
 | `notes/journal.md` | Investigation working notebook | DFIR practitioner studying the method |
 | `.github/workflows/ci.yml` | Automated markdownlint, typography, and Suricata rule validation (`suricata -T`, runs when `detection/*.rules` is present) on push | CI |
 
