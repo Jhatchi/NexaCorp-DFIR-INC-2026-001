@@ -1,4 +1,4 @@
-# NexaCorp DFIR Engagement (INC-2026-001) - Linux Infrastructure Compromise
+# NexaCorp DFIR: INC-2026-001 - Linux Infrastructure Compromise
 
 DFIR investigation and detection engineering on a simulated intrusion against NexaCorp infrastructure. Conducted as a 4-day solo engagement (BeCode Brussels Blue & Red Team bootcamp, Mission 01). The deliverable is a 54-page findings report (PDF) plus 7 validated Suricata rules that catch the captured incident in PCAP replay.
 
@@ -9,6 +9,8 @@ DFIR investigation and detection engineering on a simulated intrusion against Ne
 [![CVE](https://img.shields.io/badge/CVE--2011--2523-vsftpd%20backdoor-critical.svg)](https://nvd.nist.gov/vuln/detail/CVE-2011-2523)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Johan--Emmanuel%20Hatchi-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/johan-emmanuel-hatchi/)
+
+This repository documents a SOC analyst engagement carried out as part of the BeCode Cybersecurity Bootcamp (promotion 2025-2026). It reconstructs a full intrusion from network and log evidence, then delivers a validated set of Suricata detection rules. It is the first incident in the NexaCorp DFIR series.
 
 ## Contents
 
