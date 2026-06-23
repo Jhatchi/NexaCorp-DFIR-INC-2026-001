@@ -10,6 +10,26 @@ DFIR investigation and detection engineering on a simulated intrusion against Ne
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Johan--Emmanuel%20Hatchi-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/johan-emmanuel-hatchi/)
 
+## Contents
+
+- [⚠ Operational notice](#-operational-notice)
+- [At a glance](#at-a-glance)
+- [Engagement context](#engagement-context)
+- [Executive summary](#executive-summary)
+- [Kill chain summary](#kill-chain-summary)
+- [How to read this report](#how-to-read-this-report)
+- [Methodology](#methodology)
+- [Tools used](#tools-used)
+- [Findings summary](#findings-summary)
+- [Detection engineering](#detection-engineering)
+- [Repository layout](#repository-layout)
+- [Reproducibility](#reproducibility)
+- [Known limits](#known-limits)
+- [NexaCorp DFIR series](#nexacorp-dfir-series)
+- [Acknowledgments](#acknowledgments)
+- [About](#about)
+- [License](#license)
+
 ## ⚠ Operational notice
 
 **This is a lab engagement against fictitious infrastructure.** NexaCorp is a fictional client used as the scenario for BeCode Brussels Mission 01. The compromised host is a Metasploitable 2 VM intentionally vulnerable for security training, and the Caldera Sandcat implant is part of the lab teaching the analyst what a real intruder's beacon traffic looks like. No real organization, network, or human was attacked.
